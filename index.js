@@ -30,7 +30,7 @@ const renderSvg = async (id) => {
 app.get('/punks/:id', async (req, res) => {
   const id = req.params.id
   res.send({
-    image_data: await renderSvg(1),
+    image_data: await renderSvg(id),
     description: '',
     name: `ASCII Punk #${id}`,
     attributes: [],
