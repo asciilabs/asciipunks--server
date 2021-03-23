@@ -8,7 +8,7 @@ const web3 = new Web3(
   new Web3.providers.HttpProvider(process.env.ETH_HTTP_PROVIDER_URL)
 )
 
-const contractAddress = '0xda6177cCe5f3343300bEA77111380Dd20D9dA6D8'
+const contractAddress = process.env.CONTRACT_ADDRESS
 const contract = new web3.eth.Contract(
   [
     {
