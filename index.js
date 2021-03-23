@@ -8,28 +8,21 @@ const web3 = new Web3(
   new Web3.providers.HttpProvider(process.env.ETH_HTTP_PROVIDER_URL)
 )
 
-const contractAddress = '0xd4e4078ca3495de5b1d4db434bebc5a986197782'
+const contractAddress = '0xda6177cCe5f3343300bEA77111380Dd20D9dA6D8'
 const contract = new web3.eth.Contract(
   [
     {
       type: 'function',
-      name: 'tokenURI',
-      inputs: [{ name: '_tokenId', type: 'uint256' }],
-      outputs: [{ name: 'autoglyph', type: 'string' }],
-    },
-
-    {
-      type: 'function',
       name: 'draw',
       inputs: [{ name: '_tokenId', type: 'uint256' }],
-      outputs: [{ name: 'autoglyph', type: 'string' }],
+      outputs: [{ name: '', type: 'string' }],
     },
   ],
   contractAddress
 )
 
 const renderSvg = async (id) => {
-  const token = await contract.methods.tokenURI(id).call()
+  const token = await contract.methods.draw(id).call()
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="350" height="350"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="75px" fill="#fffffa">${token}</text></svg>`
 }
