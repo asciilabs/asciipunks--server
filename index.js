@@ -52,6 +52,14 @@ app.get('/punks/:id', async (req, res) => {
   })
 })
 
+
+app.get('/punks/:id/preview', async (req, res) => {
+  const id = req.params.id
+  res.setHeader('content-type', 'image/svg+xml')
+  res.send(await renderSvg(id))
+})
+
+
 const port = process.env.PORT || 3000
 
 app.listen(port, () => {
