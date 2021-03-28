@@ -6,6 +6,8 @@ const fs = require('fs')
 
 const Web3 = require('web3')
 
+const htmlSafe=  require('./lib/htmlSafe')
+
 const web3 = new Web3(
   new Web3.providers.HttpProvider(process.env.ETH_HTTP_PROVIDER_URL)
 )
@@ -24,7 +26,7 @@ const contract = new web3.eth.Contract(
 )
 
 const renderSvg = async (id) => {
-  const token = await contract.methods.draw(id).call()
+  const token = htmlSafe(await contract.methods.draw(id).call())
 
   return(
 `<svg xmlns='http://www.w3.org/2000/svg' width='221.5' height='460'>
