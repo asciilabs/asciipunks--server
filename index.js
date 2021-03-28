@@ -36,7 +36,7 @@ const renderSvg = async (id) => {
     </style>
   </defs>
   <rect width='221.5' height='460' style='fill:black;stroke-width:0' />
-  <text fill='white' style='white-space: pre; font-family: Unimono, monospace; font-size: 2em;'>${token.split("\n").map(line => `<tspan x='0' dy='1.15em'>${line}</tspan>`).join('')}</text>
+  <text fill='white' style='white-space: pre; word-wrap:normal; font-family: Unimono, monospace; font-size: 2em;'>${token.split("\n").map(line => `<tspan x='0' dy='1.15em' xml:space="preserve">${line}</tspan>`).join('')}</text>
 </svg>`
   )
 }
