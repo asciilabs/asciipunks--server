@@ -1,6 +1,8 @@
 require('dotenv').config()
 const express = require('express')
 const app = express()
+const path = require('path')
+const fs = require('fs')
 
 const Web3 = require('web3')
 
@@ -24,7 +26,17 @@ const contract = new web3.eth.Contract(
 const renderSvg = async (id) => {
   const token = await contract.methods.draw(id).call()
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="350" height="350"><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="75px" fill="#fffffa">${token}</text></svg>`
+  return(
+`<svg xmlns='http://www.w3.org/2000/svg' width='221.5' height='460'>
+  <defs>
+    <style type='text/css'>
+      @font-face { font-family: Unimono; src: url('https://asciipunks.com/unifont.ttf'); }
+    </style>
+  </defs>
+  <rect width='221.5' height='460' style='fill:black;stroke-width:0' />
+  <text fill='white' style='white-space: pre; font-family: Unimono, monospace; font-size: 2em;'>${token.split("\n").map(line => `<tspan x='0' dy='1.15em'>${line}</tspan>`).join('')}</text>
+</svg>`
+  )
 }
 
 app.get('/punks/:id', async (req, res) => {
