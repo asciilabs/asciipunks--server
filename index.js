@@ -76,15 +76,14 @@ app.get('/punks/:id/preview', async (req, res) => {
         bottom: 0,
         left: 100,
         right: 100,
-        background: 'black'
+        background: 'black',
       })
       .toBuffer()
     res.type('png').send(png)
-  } catch(e) {
-    console.error("ERROR")
+  } catch (e) {
+    console.error('ERROR')
     console.error(e)
   }
-
 })
 
 const port = process.env.PORT || 3000
