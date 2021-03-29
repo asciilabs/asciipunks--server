@@ -3,6 +3,7 @@ const express = require('express')
 const app = express()
 const path = require('path')
 const fs = require('fs')
+const sharp = require('sharp')
 
 const Web3 = require('web3')
 
@@ -58,7 +59,16 @@ app.get('/punks/:id', async (req, res) => {
 
 app.get('/punks/:id/preview', async (req, res) => {
   const id = req.params.id
-  res.type('svg').send(await renderSvg(id))
+  const svg = await renderSvg(id)
+
+  try {
+    const png = await sharp(Buffer.from(svg)).png().toBuffer()
+    res.type('png').send(png)
+  } catch(e) {
+    console.error("ERROR")
+    console.error(e)
+  }
+
 })
 
 const port = process.env.PORT || 3000
