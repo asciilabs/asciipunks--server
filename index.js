@@ -62,7 +62,23 @@ app.get('/punks/:id/preview', async (req, res) => {
   const svg = await renderSvg(id)
 
   try {
-    const png = await sharp(Buffer.from(svg)).png().toBuffer()
+    const png = await sharp(Buffer.from(svg))
+      .png()
+      .resize({
+        background: 'black',
+        fit: sharp.fit.contain,
+        position: 'center',
+        width: 920,
+        height: 460,
+      })
+      .extend({
+        top: 100,
+        bottom: 0,
+        left: 100,
+        right: 100,
+        background: 'black'
+      })
+      .toBuffer()
     res.type('png').send(png)
   } catch(e) {
     console.error("ERROR")
