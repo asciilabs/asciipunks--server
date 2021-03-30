@@ -25,19 +25,19 @@ const renderSvg = async (id, modern = false) => {
   return `<svg xmlns='http://www.w3.org/2000/svg' width='460' height='460'>
   <defs>
     <style type='text/css'>
-      @font-face { font-family: Unimono; src: url('https://asciipunks.com/unifont.ttf'); }
+      @font-face { font-family: Unifont; src: url('https://asciipunks.com/unifont.ttf'); }
     </style>
   </defs>
   <rect width='460' height='460' style='fill:black;stroke-width:0' />
   <text fill='white' style='white-space: pre; word-wrap:normal; font-family: ${
-    modern ? '"REXPaint 10x10"' : 'Unimono'
-  }, monospace; font-size: 2.65em;' ${modern ? "y='30'" : ''}>${token
+    modern ? '"REXPaint 10x10"' : 'Unifont'
+  }, monospace; font-size: 2.65em;' y="30">${token
     .split('\n')
     .map(
       (line) =>
         `<tspan x='${
-          modern ? '40' : '124.435'
-        }' dy='${modern ? '1em' : '1.15em'}' xml:space='preserve'>${line}</tspan>`
+          modern ? '40' : '134.435'
+        }' dy='1em' xml:space='preserve'>${line}</tspan>`
     )
     .join('')}</text>
 </svg>`
