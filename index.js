@@ -19,7 +19,7 @@ const contract = new web3.eth.Contract(
   contractAddress
 )
 
-const renderSvg = async (id) => {
+const renderSvg = async (id, modern = false) => {
   const token = htmlSafe(await contract.methods.draw(id).call())
 
   return `<svg xmlns='http://www.w3.org/2000/svg' width='460' height='460'>
@@ -29,24 +29,28 @@ const renderSvg = async (id) => {
     </style>
   </defs>
   <rect width='460' height='460' style='fill:black;stroke-width:0' />
-  <text fill='white' style='white-space: pre; word-wrap:normal; font-family: Unimono, monospace; font-size: 2.65em;'>${token
+  <text fill='white' style='white-space: pre; word-wrap:normal; font-family: ${
+    modern ? '"REXPaint 10x10"' : 'Unimono'
+  }, monospace; font-size: 2.65em;' ${modern ? "y='30'" : ''}>${token
     .split('\n')
     .map(
       (line) =>
-        `<tspan x='124.435' dy='1.15em' xml:space='preserve'>${line}</tspan>`
+        `<tspan x='${
+          modern ? '40' : '124.435'
+        }' dy='${modern ? '1em' : '1.15em'}' xml:space='preserve'>${line}</tspan>`
     )
     .join('')}</text>
 </svg>`
 }
 
 app.get('/punks/:id/rendered.png', async (req, res) => {
-  const id = req.params.id
-  const tokenSvg = await renderSvg(id)
+  const { id } = req.params
+  const { modern } = req.query
+
+  const tokenSvg = await renderSvg(id, modern)
 
   try {
-    const png = await sharp(Buffer.from(tokenSvg))
-      .png()
-      .toBuffer()
+    const png = await sharp(Buffer.from(tokenSvg)).png().toBuffer()
     res.type('png').send(png)
   } catch (e) {
     console.error('ERROR')
@@ -67,7 +71,8 @@ app.get('/punks/:id', async (req, res) => {
 
 app.get('/punks/:id/preview', async (req, res) => {
   const id = req.params.id
-  const svg = await renderSvg(id)
+  const { modern } = req.query
+  const svg = await renderSvg(id, modern)
 
   try {
     const png = await sharp(Buffer.from(svg))
