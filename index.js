@@ -29,7 +29,7 @@ const renderSvg = async (id) => {
     </style>
   </defs>
   <rect width='460' height='460' style='fill:black;stroke-width:0' />
-  <text fill='white' style='white-space: pre; word-wrap:normal; font-family: Unimono, monospace; font-size: 2em;'>${token
+  <text fill='white' style='white-space: pre; word-wrap:normal; font-family: Unimono, monospace; font-size: 2.65em;'>${token
     .split('\n')
     .map(
       (line) =>
@@ -39,10 +39,25 @@ const renderSvg = async (id) => {
 </svg>`
 }
 
+app.get('/punks/:id/rendered.png', async (req, res) => {
+  const id = req.params.id
+  const tokenSvg = await renderSvg(id)
+
+  try {
+    const png = await sharp(Buffer.from(tokenSvg))
+      .png()
+      .toBuffer()
+    res.type('png').send(png)
+  } catch (e) {
+    console.error('ERROR')
+    console.error(e)
+  }
+})
+
 app.get('/punks/:id', async (req, res) => {
   const id = req.params.id
   res.send({
-    image_data: await renderSvg(id),
+    image: `https://api.asciipunks.com/punks/${id}/rendered.png`,
     description: '',
     name: `ASCII Punk #${id}`,
     attributes: [],
@@ -66,9 +81,9 @@ app.get('/punks/:id/preview', async (req, res) => {
       })
       .extend({
         top: 100,
-        bottom: 0,
-        left: 100,
-        right: 100,
+        bottom: 100,
+        left: 200,
+        right: 200,
         background: 'black',
       })
       .toBuffer()
@@ -80,7 +95,10 @@ app.get('/punks/:id/preview', async (req, res) => {
 })
 
 const walletShowcasePreview = async (address) => {
-  const ownedTokens = Math.min(7, await contract.methods.balanceOf(address).call())
+  const ownedTokens = Math.min(
+    7,
+    await contract.methods.balanceOf(address).call()
+  )
 
   const initialArray = []
   for (let i = 0; i < ownedTokens; i++) initialArray.push(0)
@@ -106,7 +124,7 @@ const walletShowcasePreview = async (address) => {
   ${tokens.map(
     (token, i, arr) =>
       `<text dx="${
-        arr.length === 7 ? 0 : 160 * ((7 - (arr.length % 7))) / 2
+        arr.length === 7 ? 0 : (160 * (7 - (arr.length % 7))) / 2
       }" fill='white' style='white-space: pre; word-wrap:normal; font-family: Unimono, monospace; font-size: 2em;'>${token
         .split('\n')
         .map(
