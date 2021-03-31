@@ -50,7 +50,7 @@ app.get('/punks/:id/rendered.png', async (req, res) => {
   const tokenSvg = await renderSvg(id, modern)
 
   try {
-    const png = await sharp(Buffer.from(tokenSvg)).png().toBuffer()
+    const png = await sharp(Buffer.from(tokenSvg), { density: 460 }).png().toBuffer()
     res.type('png').send(png)
   } catch (e) {
     console.error('ERROR')
@@ -75,7 +75,7 @@ app.get('/punks/:id/preview', async (req, res) => {
   const svg = await renderSvg(id, modern)
 
   try {
-    const png = await sharp(Buffer.from(svg))
+    const png = await sharp(Buffer.from(svg), { density: 460 })
       .png()
       .resize({
         background: 'black',
@@ -148,7 +148,7 @@ app.get('/mypunks/:address/preview', async (req, res) => {
   const tokensSvg = await walletShowcasePreview(address)
 
   try {
-    const png = await sharp(Buffer.from(tokensSvg))
+    const png = await sharp(Buffer.from(tokensSvg), { density: 1120 })
       .png()
       .resize({
         background: 'black',
