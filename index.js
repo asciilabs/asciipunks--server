@@ -19,6 +19,12 @@ const contract = new web3.eth.Contract(
   contractAddress
 )
 
+const namesContractAddress = process.env.NAMES_CONTRACT_ADDRESS
+const namesContract = new web3.eth.Contract(
+  require('./lib/AsciiPunksNames.json'),
+  namesContractAddress
+)
+
 const renderSvg = async (id, modern = false) => {
   const token = htmlSafe(await contract.methods.draw(id).call())
 
@@ -60,10 +66,11 @@ app.get('/punks/:id/rendered.png', async (req, res) => {
 
 app.get('/punks/:id', async (req, res) => {
   const id = req.params.id
+  const name = await namesContract.methods.getName(parseInt(id)).call()
   res.send({
     image: `https://api.asciipunks.com/punks/${id}/rendered.png`,
     description: '',
-    name: `ASCII Punk #${id}`,
+    name: name?.length ? `ASCII Punk #${id}: ${name}` : `ASCII Punk #${id}`,
     attributes: [],
     background_color: '000000',
   })
