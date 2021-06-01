@@ -56,7 +56,9 @@ app.get('/punks/:id/rendered.png', async (req, res) => {
   const tokenSvg = await renderSvg(id, modern)
 
   try {
-    const png = await sharp(Buffer.from(tokenSvg), { density: 300 }).png().toBuffer()
+    const png = await sharp(Buffer.from(tokenSvg), { density: 300 })
+      .png()
+      .toBuffer()
     res.type('png').send(png)
   } catch (e) {
     console.error('ERROR')
@@ -64,14 +66,62 @@ app.get('/punks/:id/rendered.png', async (req, res) => {
   }
 })
 
+const punks = []
+
+;(async () => {
+  const TOKEN_LIMIT = await contract.methods.totalSupply().call()
+
+  console.log('Loading punks...')
+  for (let i = 1; i <= TOKEN_LIMIT; i++) {
+    const punk = await contract.methods.draw(i).call()
+    punks.push(punk)
+  }
+
+  console.log(`${punks.length} punks loaded!`)
+  console.log(punks[0])
+
+  console.log('rarity:')
+
+  const hatOccurrences = {}
+  const eyesOccurrences = {}
+  const noseOccurrences = {}
+  const mouthOccurrences = {}
+
+  for (let i = 0; i < punks.length; i++) {
+    const punk = punks[i].split('\n')
+    const currentHat = punk.slice(0, 3).join('\n')
+    hatOccurrences[currentHat] = (hatOccurrences[currentHat] || 0) + 1
+
+    const currentEyes = punk[4]
+    eyesOccurrences[currentEyes] = (eyesOccurrences[currentEyes] || 0) + 1
+
+    const currentNose = punk[5]
+    noseOccurrences[currentNose] = (noseOccurrences[currentNose] || 0) + 1
+
+    const currentMouth = punk.slice(6, 8).join('\n')
+    mouthOccurrences[currentMouth] = (mouthOccurrences[currentMouth] || 0) + 1
+  }
+
+  console.log(hatOccurrences)
+  console.log(eyesOccurrences)
+  console.log(noseOccurrences)
+  console.log(mouthOccurrences)
+})
+
 app.get('/punks/:id', async (req, res) => {
   const id = req.params.id
   const name = await namesContract.methods.getName(parseInt(id)).call()
+  const TOKEN_LIMIT = await contract.methods.totalSupply().call()
+
   res.send({
     image: `https://api.asciipunks.com/punks/${id}/rendered.png`,
     description: '',
     name: name?.length ? `ASCII Punk #${id}: ${name}` : `ASCII Punk #${id}`,
-    attributes: [],
+    attributes: [
+      {
+        value: 'hat'
+      }
+    ],
     background_color: '000000',
   })
 })
