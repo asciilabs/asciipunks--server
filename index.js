@@ -117,11 +117,7 @@ app.get('/punks/:id', async (req, res) => {
     image: `https://api.asciipunks.com/punks/${id}/rendered.png`,
     description: '',
     name: name?.length ? `ASCII Punk #${id}: ${name}` : `ASCII Punk #${id}`,
-    attributes: [
-      {
-        value: 'hat'
-      }
-    ],
+    attributes: [],
     background_color: '000000',
   })
 })
