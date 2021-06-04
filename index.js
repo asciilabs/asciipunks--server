@@ -97,10 +97,13 @@ app.get('/punks/:id', async (req, res) => {
     description: '',
     name: name?.length ? `ASCII Punk #${id}: ${name}` : `ASCII Punk #${id}`,
     attributes: [
-      { name: 'Hat', value: attributes.hats[currentAttributes.hat] },
-      { name: 'Eyes', value: attributes.eyes[currentAttributes.eyes] },
-      { name: 'Nose', value: attributes.noses[currentAttributes.nose] },
-      { name: 'Mouth', value: attributes.mouths[currentAttributes.mouth] },
+      { trait_type: 'Hat', value: attributes.hats[currentAttributes.hat] },
+      { trait_type: 'Eyes', value: attributes.eyes[currentAttributes.eyes] },
+      { trait_type: 'Nose', value: attributes.noses[currentAttributes.nose] },
+      {
+        trait_type: 'Mouth',
+        value: attributes.mouths[currentAttributes.mouth],
+      },
     ],
     background_color: '000000',
   })
