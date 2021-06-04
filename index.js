@@ -1,13 +1,13 @@
 require('dotenv').config()
 const express = require('express')
-const app = express()
-const path = require('path')
 const fs = require('fs')
 const sharp = require('sharp')
-
 const Web3 = require('web3')
 
+const attributes = require('./lib/attributes')
 const htmlSafe = require('./lib/htmlSafe')
+
+const app = express()
 
 const web3 = new Web3(
   new Web3.providers.HttpProvider(process.env.ETH_HTTP_PROVIDER_URL)
@@ -68,56 +68,40 @@ app.get('/punks/:id/rendered.png', async (req, res) => {
 
 const punks = []
 
-;(async () => {
-  const TOKEN_LIMIT = await contract.methods.totalSupply().call()
+function getPunkAttributes(punk) {
+  const hat = punk.split('\n').slice(0, 3).join('\n')
 
-  console.log('Loading punks...')
-  for (let i = 1; i <= TOKEN_LIMIT; i++) {
-    const punk = await contract.methods.draw(i).call()
-    punks.push(punk)
+  const eyes = punk.split('\n')[4].slice(4, 7)
+
+  const nose = punk.split('\n')[5][5]
+
+  const mouth = punk.split('\n').slice(6, 8).join('\n')
+
+  return {
+    hat,
+    eyes,
+    nose,
+    mouth,
   }
-
-  console.log(`${punks.length} punks loaded!`)
-  console.log(punks[0])
-
-  console.log('rarity:')
-
-  const hatOccurrences = {}
-  const eyesOccurrences = {}
-  const noseOccurrences = {}
-  const mouthOccurrences = {}
-
-  for (let i = 0; i < punks.length; i++) {
-    const punk = punks[i].split('\n')
-    const currentHat = punk.slice(0, 3).join('\n')
-    hatOccurrences[currentHat] = (hatOccurrences[currentHat] || 0) + 1
-
-    const currentEyes = punk[4]
-    eyesOccurrences[currentEyes] = (eyesOccurrences[currentEyes] || 0) + 1
-
-    const currentNose = punk[5]
-    noseOccurrences[currentNose] = (noseOccurrences[currentNose] || 0) + 1
-
-    const currentMouth = punk.slice(6, 8).join('\n')
-    mouthOccurrences[currentMouth] = (mouthOccurrences[currentMouth] || 0) + 1
-  }
-
-  console.log(hatOccurrences)
-  console.log(eyesOccurrences)
-  console.log(noseOccurrences)
-  console.log(mouthOccurrences)
-})
+}
 
 app.get('/punks/:id', async (req, res) => {
   const id = req.params.id
   const name = await namesContract.methods.getName(parseInt(id)).call()
-  const TOKEN_LIMIT = await contract.methods.totalSupply().call()
+  const punk = await contract.methods.draw(parseInt(id)).call()
+
+  const currentAttributes = getPunkAttributes(punk)
 
   res.send({
     image: `https://api.asciipunks.com/punks/${id}/rendered.png`,
     description: '',
     name: name?.length ? `ASCII Punk #${id}: ${name}` : `ASCII Punk #${id}`,
-    attributes: [],
+    attributes: [
+      { name: 'Hat', value: attributes.hats[currentAttributes.hat] },
+      { name: 'Eyes', value: attributes.eyes[currentAttributes.eyes] },
+      { name: 'Nose', value: attributes.noses[currentAttributes.nose] },
+      { name: 'Mouth', value: attributes.mouths[currentAttributes.mouth] },
+    ],
     background_color: '000000',
   })
 })
